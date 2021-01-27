@@ -1,6 +1,8 @@
 package com.zitai.ms.controller;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.zitai.ms.dao.StockDao;
+import com.zitai.ms.entity.Stock;
 import com.zitai.ms.service.OrderService;
 import com.zitai.ms.service.StockService;
 import com.zitai.ms.service.UserService;
@@ -8,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutorService;
@@ -55,6 +60,19 @@ public class OrderController {
             return e.getMessage();
         }
     }
+
+    @Autowired
+    private StockDao stockDao;
+
+    @Autowired
+    private  RedisTemplate redisTemplate;
+    @GetMapping("saveToRedis")
+    public  Stock list() {
+        Stock stock = stockDao.selectStock(1);
+        redisTemplate.opsForValue().set("kill"+stock.getId(),stock.getId()+"");
+        return stock;
+    }
+
 
     //开发一个秒杀方法 乐观锁防止超卖+ 令牌桶算法限流
     @GetMapping("killtoken")
@@ -151,7 +169,7 @@ public class OrderController {
         int count = 0;
         try {
             // 完成扣库存下单事务
-            orderService.kill(sid);
+           count= orderService.kill(sid);
             // 删除库存缓存
             stockService.delStockCountCache(sid);
         } catch (Exception e) {
@@ -208,5 +226,14 @@ public class OrderController {
                 LOGGER.error("delCacheByThread执行出错", e);
             }
         }
+    }
+    @Autowired(required = false)
+    public void setRedisTemplate(RedisTemplate redisTemplate) {
+        RedisSerializer stringSerializer = new StringRedisSerializer();
+        redisTemplate.setKeySerializer(stringSerializer);
+        redisTemplate.setValueSerializer(stringSerializer);
+        redisTemplate.setHashKeySerializer(stringSerializer);
+        redisTemplate.setHashValueSerializer(stringSerializer);
+        this.redisTemplate = redisTemplate;
     }
 }

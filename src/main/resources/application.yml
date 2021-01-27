@@ -1,19 +1,19 @@
 server:
-  port: 8989
+  port: 80
   servlet:
     context-path: /ms
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ms
     username: root
-    password: 123456
+    password: 514730
 
   redis:
     port: 6379
     host: localhost
-    database: 0
+    database: 10
     password: 123456
 
 mybatis:
@@ -21,5 +21,6 @@ mybatis:
   type-aliases-package: com.zitai.ms.entity
   configuration:
     map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 

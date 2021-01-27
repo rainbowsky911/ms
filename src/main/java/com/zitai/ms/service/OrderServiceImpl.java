@@ -107,6 +107,7 @@ public class OrderServiceImpl implements OrderService{
         Order order = new Order();
         order.setSid(stock.getId()).setName(stock.getName()).setCreateDate(new Date());
         orderDao.createOrder(order);
-        return order.getId();
+        Stock selectStock = stockDao.selectStock(stock.getId());
+        return  selectStock.getCount()-selectStock.getSale();
     }
 }

@@ -16,7 +16,17 @@ import java.util.Date;
 @Accessors(chain=true)
 public class Order {
     private Integer id;
+
+    /**
+     * 库存ID
+     */
     private Integer sid;
+    /**
+     * 商品名称
+     */
     private String name;
+    /**
+     * 创建时间
+     */
     private Date createDate;
 }

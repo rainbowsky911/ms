@@ -8,6 +8,11 @@
         where id = #{id}
     </select>
 
+    <select id="selectStock" resultType="com.zitai.ms.entity.Stock">
+        select  *from stock where  id =#{id}
+
+    </select>
+
     <!--根据商品id扣除库存-->
     <update id="updateSale" parameterType="Stock">
         update stock set
